@@ -7,9 +7,13 @@ module RubyPowerpoint
 
     attr_reader :files
 
-    def initialize path
-      raise 'Not a valid file format.' unless (['.pptx'].include? File.extname(path).downcase)
-      @files = Zip::File.open path
+    def initialize path_or_io
+      if path_or_io.is_a?(StringIO)
+        @files = Zip::File.open_buffer path_or_io
+      else
+        raise 'Not a valid file format.' unless (['.pptx'].include? File.extname(path_or_io).downcase)
+        @files = Zip::File.open path_or_io
+      end
     end
 
     def slides
